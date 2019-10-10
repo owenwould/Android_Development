@@ -1,0 +1,72 @@
+package com.example.androidcheckboxes;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.nfc.Tag;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    RadioGroup rg;
+    RadioButton rb10,rb20,rb30;
+    EditText edit_text_bill;
+    TextView textViewTotalBill,textViewTipBill;
+    float  TEN_PERCENT = 0.1f,TWENTY_PERCENT = 0.2f,THIRTY_PERCENT=0.3f;
+
+
+    RadioGroup.OnCheckedChangeListener onCheckChanged = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId)
+        {
+            if (checkedId == rb10.getId())
+            {
+                calculateTip(TEN_PERCENT);
+            }
+            else if (checkedId == rb20.getId())
+            {
+               calculateTip(TWENTY_PERCENT);
+            }
+            else if (checkedId == rb30.getId())
+            {
+                calculateTip(THIRTY_PERCENT);
+            }
+        }
+    };
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        rg = findViewById(R.id.radioGroup);
+        rg.setOnCheckedChangeListener(onCheckChanged);
+
+        rb10 = findViewById(R.id.radio_button_10);
+        rb20 = findViewById(R.id.radio_button_20);
+        rb30 = findViewById(R.id.radio_button_30);
+
+        edit_text_bill = findViewById(R.id.bill_enter);
+
+        textViewTipBill = findViewById(R.id.tip_amount);
+        textViewTotalBill = findViewById(R.id.bill_amount);
+
+
+
+    }
+
+    private void calculateTip(float iTipPercentage)
+    {
+        String sBill = edit_text_bill.getText().toString();
+        float totalBill =  Float.parseFloat(sBill);
+        float tip = totalBill * iTipPercentage;
+        textViewTotalBill.setText("Total Bill: " + totalBill);
+        textViewTipBill.setText("Total Tip: " + tip );
+    }
+}
