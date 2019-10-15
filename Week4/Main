@@ -1,0 +1,94 @@
+package com.example.week4;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.nfc.Tag;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+
+    EditText edit_text_bill;
+    TextView textViewTotalBill,textViewTipBill;
+    String sTenpercent = "10%",sTwentypercent = "20%",sThirtypercent = "30%";
+    float  TEN_PERCENT = 0.1f,TWENTY_PERCENT = 0.2f,THIRTY_PERCENT=0.3f;
+    Spinner spinner;
+
+    final String TAG = "dffd";
+
+    private AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+        {
+
+
+            
+
+            if (position == 1)
+            {
+                Log.d(TAG, "onItemSelected: 0");
+                calculateTip(TEN_PERCENT);
+            }
+            else if (position == 2)
+            {
+                calculateTip(TWENTY_PERCENT);
+            }
+            else if (position == 3)
+            {
+                calculateTip(THIRTY_PERCENT);
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent)
+        {
+
+        }
+    };
+
+
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        spinner = findViewById(R.id.spinner1);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.tip_options,android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(onItemSelectedListener);
+
+
+        edit_text_bill = findViewById(R.id.bill_enter);
+        textViewTipBill = findViewById(R.id.tip_amount);
+        textViewTotalBill = findViewById(R.id.bill_amount);
+
+
+
+    }
+
+    private void calculateTip(float iTipPercentage)
+    {
+
+
+        String sBill = edit_text_bill.getText().toString();
+        
+        float totalBill =  Float.parseFloat(sBill);
+        float tip = totalBill * iTipPercentage;
+        textViewTotalBill.setText("Total Bill: " + totalBill);
+        textViewTipBill.setText("Total Tip: " + tip );
+    }
+}
