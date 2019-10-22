@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item android:id="@+id/setting_option"
+        android:icon="@drawable/ic_airline_seat_recline_extra_black_24dp"
+        android:title="Item1"
+        app:showAsAction="ifRoom">
+
+        <menu>
+           <item android:id="@+id/background_item"
+               android:title="Background">
+               <menu>
+
+                   <item
+                       android:id="@+id/option_blue"
+                       android:title="Blue" />
+                   <item android:id="@+id/option_grey"
+                       android:title="Grey"
+                       />
+                   <item android:id="@+id/option_pink"
+                       android:title="Pink"
+                       />
+               </menu>
+           </item>
+            <item android:id="@+id/user_item"
+                android:title="User"
+                />
+        </menu>
+
+    </item>
+
+
+</menu>
