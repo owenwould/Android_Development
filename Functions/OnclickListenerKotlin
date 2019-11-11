@@ -1,0 +1,13 @@
+
+
+ private  val clickListener = View.OnClickListener {view ->
+
+        when (view.getId())
+        {
+          R.id.buttonCalc->
+          {
+              calculateWeight()
+          }
+
+        }
+    }
