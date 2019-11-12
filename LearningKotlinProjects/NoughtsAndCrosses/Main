@@ -1,0 +1,217 @@
+package com.example.noughtandcrosses
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.os.Debug
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+
+    private val buttonList = mutableListOf<Button>()
+    private val player1List = mutableListOf<Int>()
+    private val player2List = mutableListOf<Int>()
+    private val player1Symbol = "0"
+    private val player2Symbol = "X"
+    private var player1Turn = true
+    private lateinit var victoryText: TextView
+
+    private val onClickListener = View.OnClickListener { view ->
+
+        when (view.id) {
+            R.id.buttonTopLeft -> takeTurn(0)
+            R.id.buttonTopMid -> takeTurn(1)
+            R.id.buttonTopRight -> takeTurn(2)
+            R.id.buttonMidLeft -> takeTurn(3)
+            R.id.buttonMidMid -> takeTurn(4)
+            R.id.buttonMidRight -> takeTurn(5)
+            R.id.buttonBottomLeft -> takeTurn(6)
+            R.id.buttonBottomMid -> takeTurn(7)
+            R.id.buttonBottomRight -> takeTurn(8)
+        }
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val topLeftsButton = buttonTopLeft
+        buttonList.add(topLeftsButton)
+        val topMidButton = buttonTopMid
+        buttonList.add(topMidButton)
+        val topRightButton = buttonTopRight
+        buttonList.add(topRightButton)
+        val midLeftButton = buttonMidLeft
+        buttonList.add(midLeftButton)
+        val midMidButton = buttonMidMid
+        buttonList.add(midMidButton)
+        val midRightButton = buttonMidRight
+        buttonList.add(midRightButton)
+        val bottomLeftButton = buttonBottomLeft
+        buttonList.add(bottomLeftButton)
+        val bottomMidButton = buttonBottomMid
+        buttonList.add(bottomMidButton)
+        val bottomRightButton = buttonBottomRight
+        buttonList.add(bottomRightButton)
+
+        //Set On ClickListeners
+        for (button in buttonList) button.setOnClickListener(onClickListener)
+        victoryText = textViewVictory
+
+
+    }
+
+
+    private fun takeTurn(gridPosition: Int) {
+
+        if (player1Turn) buttonList[gridPosition].text = player1Symbol
+        else buttonList[gridPosition].text = player2Symbol
+        buttonList[gridPosition].isEnabled = false
+
+        if (checkForVictory(gridPosition)) {
+            victory()
+        } else {
+            if (player1Turn) {
+                player1Turn = false
+                player1List.add(gridPosition)
+            } else if (!player1Turn) {
+                player1Turn = true
+                player2List.add(gridPosition)
+            }
+        }
+
+
+    }
+
+    private fun checkForVictory(position: Int): Boolean {
+        var varPos = position
+        var posA = varPos
+        var posB = varPos
+        var bVictory = false
+        var bDiagonal = false
+
+        //Check Diagonal
+        when (position) {
+            0, 4, 8, 6, 2 -> bDiagonal = true
+        }
+
+        //Check Horizontal
+        when (position) {
+            2, 5, 8 -> {
+                posA -= 2
+                posB--
+                bVictory = checkPositions(posA, posB)
+            }
+            1, 4, 7 -> {
+                posA--
+                posB++
+                bVictory = checkPositions(posA, posB)
+            }
+            0, 3, 6 -> {
+                posA++
+                posB += 2
+                bVictory = checkPositions(posA, posB)
+            }
+        }
+        //Check Vertical
+        if (!bVictory) {
+            posA = position
+            posB = position
+            when (position) {
+                6, 7, 8 -> {
+                    posA -= 3
+                    posB -= 6
+                    bVictory = checkPositions(posA, posB)
+                }
+                3, 4, 5 -> {
+                    posA -= 3
+                    posB += 3
+                    bVictory = checkPositions(posA, posB)
+                }
+                0, 1, 2 -> {
+                    posA += 3
+                    posB += 6
+                    bVictory = checkPositions(posA, posB)
+                }
+
+            }
+        }
+        if (bVictory) {
+            return true
+        }
+
+        if (bDiagonal && !bVictory) {
+            posA = position
+            posB = position
+            when (position) {
+                0 -> {
+                    posA += 4
+                    posB += 8
+                    bVictory = checkPositions(posA, posB)
+                }
+                2 -> {
+                    posA += 2
+                    posB += 4
+                    bVictory = checkPositions(posA, posB)
+                }
+                6 -> {
+                    posA -= 2
+                    posB -= 4
+                    bVictory = checkPositions(posA, posB)
+                }
+                8 -> {
+                    posA -= 4
+                    posB -= 8
+                    bVictory = checkPositions(posA, posB)
+                }
+                4 -> {
+                    //First check
+                    posA -= 4
+                    posB += 4
+                    bVictory = checkPositions(posA, posB)
+
+                    if (bVictory) return true
+                    posA = position
+                    posB = position
+
+                    posA -= 2
+                    posB += 2
+                    bVictory = checkPositions(posA, posB)
+                }
+            }
+        }
+        if (bVictory) return true
+
+        return false
+
+
+    }
+
+    private fun checkPositions(positionA: Int, positionB: Int): Boolean {
+        if (player1Turn) {
+            if (player1List.contains(positionA) && player1List.contains(positionB)) {
+                victory()
+                return true
+            }
+        } else {
+            if (player2List.contains(positionA) && player2List.contains(positionB)) {
+                victory()
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun victory() {
+        for (button in buttonList) button.isEnabled = false
+        if (player1Turn) victoryText.text = "Player 1 Victory"
+        else victoryText.text = "Player 2 Victory"
+
+
+    }
+
+
+}
