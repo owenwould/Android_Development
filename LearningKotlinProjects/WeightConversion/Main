@@ -1,0 +1,77 @@
+package com.example.kotilinproject
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.text.Layout
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var textViewGramVal : TextView
+    private lateinit var textViewKilogramVal: TextView
+    private lateinit var textViewOunceVal: TextView
+    private lateinit var editTextEnterMass : EditText
+    val POUNDS_TO_GRAM = 453.59
+    val POUNDS_TO_KILOGRAMS = 0.45359
+    val POUNDS_TO_OUNCES = 16
+
+
+    private  val clickListener = View.OnClickListener {view ->
+
+        when (view.getId())
+        {
+          R.id.buttonCalc->
+          {
+              calculateWeight()
+          }
+
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+
+       editTextEnterMass = findViewById(R.id.editTextMass)
+
+        var i : View = findViewById(R.id.grams)
+        val textViewGram : TextView = i.findViewById(R.id.textViewTitle)
+        textViewGramVal = i.findViewById(R.id.textViewValue)
+
+        i = findViewById(R.id.kilograms)
+        val textViewKilo : TextView = i.findViewById(R.id.textViewTitle)
+        textViewKilogramVal = i.findViewById(R.id.textViewValue)
+
+        i = findViewById(R.id.ounces)
+        val textViewOunce : TextView = i.findViewById(R.id.textViewTitle)
+        textViewOunceVal = i.findViewById(R.id.textViewValue)
+
+        textViewGram.text = "Grams"
+        textViewKilo.text = "Kilograms"
+        textViewOunce.text = "Ounces"
+
+        val calcButton : Button = findViewById(R.id.buttonCalc)
+        calcButton.setOnClickListener(clickListener)
+    }
+
+    private fun calculateWeight()
+    {
+        val pounds = editTextEnterMass.text.toString().toDouble()
+
+        val grams = pounds * POUNDS_TO_GRAM
+        val kilograms = pounds * POUNDS_TO_KILOGRAMS
+        val ounches = pounds * POUNDS_TO_OUNCES
+
+        textViewOunceVal.text = ounches.toString()
+        textViewKilogramVal.text = kilograms.toString()
+        textViewGramVal.text = grams.toString()
+
+
+    }
+}
