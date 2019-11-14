@@ -1,0 +1,4 @@
+//If displaying memory address then use something like 
+text.text = String(c) rather than text.text = c.toString()
+c can be a charArray and this will still work 
+
