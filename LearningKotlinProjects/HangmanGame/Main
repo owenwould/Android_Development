@@ -1,0 +1,260 @@
+package com.example.hangman
+
+import android.graphics.Paint
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.random.Random
+import kotlin.text.StringBuilder
+
+class MainActivity : AppCompatActivity() {
+
+    private var wordlist = arrayListOf<String>(
+        "production", "compromise", "decoration",
+        "relinquish", "experience", "articulate", "reputation", "particular", "reasonable",
+        "retirement", "researcher", "federation", "attractive", "psychology", "acceptable",
+        "confidence", "background", "development", "girlfriend", "investment"
+    )
+    private val HEAD_POSITION = 56
+    private val NECK_POSITION = 76
+    private val LEFT_ARM_POSITION = 75
+    private val RIGHT_ARM_POSITION = 77
+    private val TORSO_POSITION = 98
+    private val LEFT_LEG_POSITION = 117
+    private val RIGHT_LEG_POSITION = 120
+    private var CorrectWord = ""
+    private var lives = 7
+    private var lettersToFind = 10
+    private val BLANK = ' '
+    private val HEAD = 'O'
+    private val NECK = '|'
+    private val TORSO = '|'
+    private val LEFT_ARM = '\\'
+    private val RIGHT_ARM = '/'
+    private val LEFT_LEG = '/'
+    private val RIGHT_LEG = '\\'
+    private var guessedLetters = ""
+
+    private var hangman =
+        """
+             ___
+           |      |
+           |      a
+           |     cbd
+           |       e
+           |     f  g
+           |
+       __|__
+        """
+
+    lateinit var textHangman: TextView
+    lateinit var textLetters: TextView
+    lateinit var textLetterGuess: TextView
+    lateinit var inputText: EditText
+    var wordLetters = mutableListOf<Char>()
+    var guessedLettersList = mutableListOf<Char>()
+
+    private val onClickListener = View.OnClickListener { view ->
+
+        when (view.id) {
+            R.id.buttonSubmit -> {
+                if (!inputText.text.trim().isNullOrBlank()) {
+                    makeGuess()
+                    inputText.setText("")
+                }
+            }
+        }
+
+
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val button = buttonSubmit
+        button.setOnClickListener(onClickListener)
+        textHangman = textViewHangman
+        textHangman.text = hangman
+        textLetterGuess = textViewLettersGuess
+        textLetters = textViewLetters
+        inputText = editTextEnterLetters
+        guessedLetters = textLetterGuess.text.toString()
+        setHangman()
+        choseWord()
+    }
+
+
+    private fun setHangman() {
+
+        var c = hangman.toCharArray()
+        c[HEAD_POSITION] = BLANK
+        c[NECK_POSITION] = BLANK
+        c[TORSO_POSITION] = BLANK
+        c[LEFT_ARM_POSITION] = BLANK
+        c[RIGHT_ARM_POSITION] = BLANK
+        c[LEFT_LEG_POSITION] = BLANK
+        c[RIGHT_LEG_POSITION] = BLANK
+
+        hangman = String(c)
+        textHangman.text = hangman
+
+    }
+
+
+    private fun setLetters(wordCount: Int): String {
+        var builder = StringBuilder()
+        for (i in 0 until wordCount) {
+            builder.append("_")
+            builder.append(" ")
+        }
+        return builder.toString()
+    }
+
+    private fun choseWord() {
+        val minNumber = 1
+        val maxNumber = 20
+        val random = Random
+        val randomNumber = random.nextInt(maxNumber - minNumber)
+        CorrectWord = wordlist[randomNumber]
+        var correctWordArray = CorrectWord.toCharArray()
+        for (character in correctWordArray) wordLetters.add(character)
+        textLetters.text = setLetters(CorrectWord.length)
+        lettersToFind = 0
+    }
+
+    private fun reduceLives() {
+        when (lives) {
+            7 -> updateHangman(HEAD_POSITION, HEAD) //HEAD
+            6 -> updateHangman(NECK_POSITION, NECK) //NECK
+            5 -> updateHangman(LEFT_ARM_POSITION, LEFT_ARM)
+            4 -> updateHangman(RIGHT_ARM_POSITION, RIGHT_ARM)
+            3 -> updateHangman(TORSO_POSITION, TORSO)
+            2 -> updateHangman(LEFT_LEG_POSITION, LEFT_LEG)
+            1 -> updateHangman(RIGHT_LEG_POSITION, RIGHT_LEG)
+
+        }
+        lives--
+        if (lives == 0) {
+            gameover()
+            editTextEnterLetters.isEnabled = false
+        }
+
+
+    }
+
+    private fun updateHangman(bodyPartPosition: Int, bodyPart: Char) {
+        var c = hangman.toCharArray()
+        c[bodyPartPosition] = bodyPart
+        hangman = String(c)
+        textHangman.text = hangman
+
+
+    }
+
+    private fun updateLettersGuessed(letter: Char) {
+        val builder = StringBuilder(guessedLetters)
+        builder.append(" ")
+        builder.append(letter.toUpperCase())
+        guessedLetters = builder.toString()
+        textLetterGuess.text = guessedLetters
+
+
+    }
+
+    fun TextView.underline() {
+        paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+    }
+
+    private fun gameover() {
+        inputText.isEnabled = false
+        if (lives < 1) {
+            textLetterGuess.text = "Gameover Word was $CorrectWord"
+        }
+        else {
+            textLetterGuess.text = "Well done you figured out the word"
+        }
+
+    }
+
+    private fun makeGuess() {
+        val letterArray = inputText.text.toString().toLowerCase().toCharArray()
+        val letter = letterArray[0]
+        var hasLostLife = false
+        var hasFoundLetter = false
+        if (guessedLettersList.isNotEmpty()) {
+            for (item in guessedLettersList) {
+                if (item.equals(letter)) {
+                    reduceLives()
+                    hasLostLife = true
+                    break
+                }
+            }
+
+        }
+        if (hasLostLife) {
+            return
+        }
+
+        for (item in wordLetters) {
+            if (item.equals(letter)) {
+                hasFoundLetter = true
+            }
+        }
+        if (!hasFoundLetter) hasLostLife = true
+
+
+        if (hasLostLife) reduceLives()
+
+        if (hasFoundLetter) updateFoundLetters(letter)
+
+        updateLettersGuessed(letter)
+        if ((lettersToFind - wordLetters.size) == 0)
+        {
+            gameover()
+        }
+        guessedLettersList.add(letter)
+    }
+
+    private fun updateFoundLetters(letter: Char) {
+
+
+        var foundCount = 0
+
+        var foundPositionList = mutableListOf<Int>()
+
+        for (item in wordLetters.indices) {
+
+            val currentLetter = wordLetters[item]
+            if (currentLetter.equals(letter)) {
+                foundPositionList.add(item)
+                foundCount++
+            }
+
+        }
+
+
+
+
+        val displayedWord = textLetters.text.toString().toCharArray()
+
+        for (item in foundPositionList) {
+            if (item == 0) {
+                displayedWord[item] = letter
+            } else {
+                displayedWord[(item * 2)] = letter
+            }
+        }
+        textLetters.text = String(displayedWord)
+
+        lettersToFind += foundCount
+
+        println(lettersToFind - wordLetters.size)
+
+    }
+
+
+}
