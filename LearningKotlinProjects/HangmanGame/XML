@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textViewHangman"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="149dp"
+        tools:layout_editor_absoluteY="144dp" />
+
+    <TextView
+        android:id="@+id/textViewLetters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="_ _ _ _"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:textSize="32sp"/>
+    <TextView
+        android:id="@+id/textViewLettersGuess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Letters Guessed:"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="start"
+        android:textSize="16sp"/>
+
+
+    <EditText
+        android:id="@+id/editTextEnterLetters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:textSize="16sp"
+
+        android:layout_marginTop="96dp"
+        android:layout_gravity="center"
+        android:inputType="textCapCharacters"
+        android:hint="Enter Letters"
+        android:maxLength="1"/>
+
+
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Guess" />
+
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
