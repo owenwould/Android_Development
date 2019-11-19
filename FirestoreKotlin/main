@@ -1,0 +1,95 @@
+package com.example.firestoreinclass
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+
+class MainActivity : AppCompatActivity() {
+
+
+    private val onClickListener = View.OnClickListener { view ->
+        when (view.id) {
+            R.id.buttonSubmit -> saveBook()
+            R.id.buttonLoad -> loadBooks()
+        }
+    }
+
+
+    lateinit var eTextName: EditText
+    lateinit var eTextAuthor: EditText
+    lateinit var eTextYear: EditText
+
+    lateinit var contentTV: TextView
+
+
+    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val collectionRef: CollectionReference = db.collection("books")
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val button = buttonSubmit
+        val loadButton = buttonLoad
+        loadButton.setOnClickListener(onClickListener)
+        button.setOnClickListener(onClickListener)
+
+        eTextName = editTextName
+        eTextAuthor = editTextAuthor
+        eTextYear = editTextYear
+
+        contentTV = textViewList
+
+    }
+
+
+    private fun saveBook() {
+        val name = editTextName.text.toString()
+        val author = editTextAuthor.text.toString()
+        val publicationYear = eTextYear.text.toString().toInt()
+
+
+        val book = BookJ(name, author, publicationYear)
+
+
+        collectionRef.document().set(book)
+
+    }
+
+    private fun loadBooks() {
+
+        //To Filter based of string use .whereGreaterThanOrEqualTo("name", "prefix") before .get
+
+
+
+        collectionRef
+            .get().addOnSuccessListener { documents ->
+                var content = ""
+                val x = documents.size()
+
+                for (document in documents) {
+                    val book = document.toObject(BookJ::class.java)
+                    book.documentId = document.id
+                    val name = book.name
+                    val author = book.author
+                    val publicationYear = book.publicationYear
+                    val documentId = book.documentId
+                    content += "Name: $name \n Author: $author \n Publication date: $publicationYear \n " +
+                            "DocumentID= $documentId \n\n"
+
+                }
+                contentTV.text = content
+            }
+    }
+
+
+}
