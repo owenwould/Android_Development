@@ -1,0 +1,10 @@
+//Kotlin
+ private fun sendText()
+    {
+        val number = numberInput.text
+        val message = messageInput.text
+        val uri = Uri.parse("smsto:$number")
+        val intent = Intent(Intent.ACTION_SENDTO,uri)
+        intent.putExtra("sms_body",message)
+        startActivity(intent)
+    }
