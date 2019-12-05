@@ -1,0 +1,86 @@
+package com.example.sensors;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Service;
+import android.content.Context;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
+    float maxValue;
+    private SensorEventListener lightEventListener;
+    private TextView textLum;
+    private View root;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        textLum = findViewById(R.id.textViewLum);
+
+        if (lightSensor == null) {
+            Toast.makeText(this, "This device has no light sensor", Toast.LENGTH_SHORT);
+            finish();
+        }
+        root = findViewById(R.id.root);
+        maxValue = lightSensor.getMaximumRange();
+
+        lightEventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+              float value = event.values[0];
+              String s = "Luminosity " + " " +  value;
+              textLum.setText(s);
+
+                int newValue = (int) (255f * value / maxValue);
+                root.setBackgroundColor(Color.rgb(newValue, newValue, newValue));
+
+
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(lightEventListener, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(lightEventListener);
+    }
+
+
+}
